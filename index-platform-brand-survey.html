@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Tool Platform Perception Survey</title>
+  <style>
+    :root {
+      --ink: #111312;
+      --muted: #69706c;
+      --bg: #eef3ef;
+      --paper: #fffdf8;
+      --line: #d8ddd7;
+      --green: #0f6f5e;
+      --green-dark: #073d35;
+      --gold: #c8a75d;
+      --soft: #e8f4ef;
+      --soft-blue: #eaf3f8;
+      --shadow: 0 24px 70px rgba(11, 41, 35, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 14%, rgba(200, 167, 93, 0.18), transparent 26%),
+        linear-gradient(135deg, rgba(15, 111, 94, 0.11), transparent 36%),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(30deg, rgba(15, 111, 94, 0.22) 12%, transparent 12.5%, transparent 87%, rgba(15, 111, 94, 0.22) 87.5%),
+        linear-gradient(150deg, rgba(15, 111, 94, 0.22) 12%, transparent 12.5%, transparent 87%, rgba(15, 111, 94, 0.22) 87.5%);
+      background-size: 54px 94px;
+    }
+
+    button, input, select, textarea { font: inherit; letter-spacing: 0; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 30px 0 46px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px 8px 18px 18px;
+      background: linear-gradient(150deg, var(--green-dark), var(--green));
+      color: #fff8e7;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      box-shadow: 0 12px 26px rgba(7, 61, 53, 0.24);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(20px, 2.3vw, 31px);
+      line-height: 1.05;
+      font-weight: 850;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .survey-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 253, 248, 0.96);
+      border: 1px solid rgba(216, 221, 215, 0.9);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .question-panel {
+      min-height: 680px;
+      padding: clamp(26px, 4.8vw, 58px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-panel::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      inset-inline-end: 0;
+      width: 190px;
+      height: 190px;
+      background:
+        linear-gradient(135deg, transparent 42%, rgba(200, 167, 93, 0.2) 42%, rgba(200, 167, 93, 0.2) 58%, transparent 58%),
+        linear-gradient(45deg, transparent 42%, rgba(15, 111, 94, 0.13) 42%, rgba(15, 111, 94, 0.13) 58%, transparent 58%);
+      background-size: 34px 34px;
+      opacity: 0.72;
+      pointer-events: none;
+    }
+
+    .side-panel {
+      padding: 22px;
+      position: sticky;
+      top: 20px;
+      background:
+        linear-gradient(180deg, rgba(15, 111, 94, 0.08), transparent),
+        rgba(255, 253, 248, 0.94);
+    }
+
+    .side-panel h3 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    .side-panel p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 34px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-label {
+      color: var(--green);
+      font-weight: 900;
+      font-size: clamp(17px, 2vw, 25px);
+    }
+
+    .progress {
+      width: min(42%, 460px);
+      height: 13px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #dfe4e3;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      transition: width 180ms ease;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(36px, 5.8vw, 74px);
+      line-height: 1.03;
+      max-width: 980px;
+      font-weight: 900;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: clamp(16px, 1.8vw, 24px);
+      line-height: 1.45;
+      margin: 0 0 34px;
+      max-width: 860px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field { display: grid; gap: 8px; }
+
+    label {
+      color: var(--ink);
+      font-weight: 850;
+      font-size: 15px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #d2d9d6;
+      border-radius: 10px;
+      background: #fffefa;
+      color: var(--ink);
+      outline: none;
+      padding: 12px 14px;
+    }
+
+    select { max-height: 54px; }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(15, 111, 94, 0.14);
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .option {
+      min-height: 76px;
+      border: 1.5px solid #d2d9d6;
+      border-radius: 13px;
+      background: rgba(255, 255, 252, 0.8);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+      font-size: 19px;
+      font-weight: 850;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(15, 111, 94, 0.55);
+    }
+
+    .option input {
+      width: 24px;
+      height: 24px;
+      min-height: 24px;
+      accent-color: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .option.selected {
+      background: var(--soft);
+      border-color: var(--green);
+      box-shadow: inset 0 0 0 1px rgba(15, 111, 94, 0.08);
+    }
+
+    .other-wrap {
+      display: none;
+      margin-top: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .other-wrap.visible { display: block; }
+
+    .matrix {
+      display: grid;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .matrix-row {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: rgba(255, 255, 252, 0.8);
+    }
+
+    .matrix-row h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .matrix-options {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .matrix-options.six {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .matrix-choice {
+      border: 1.5px solid #d2d9d6;
+      border-radius: 11px;
+      min-height: 52px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 800;
+      background: #fffefa;
+      cursor: pointer;
+    }
+
+    .matrix-choice input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      accent-color: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .matrix-choice.selected {
+      background: var(--soft-blue);
+      border-color: var(--green);
+    }
+
+    .error {
+      color: #a9362b;
+      font-weight: 850;
+      min-height: 22px;
+      margin: 16px 0 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-nav {
+      margin-top: auto;
+      padding-top: 34px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .button {
+      border: 0;
+      min-height: 54px;
+      border-radius: 12px;
+      padding: 0 26px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .button.primary {
+      color: white;
+      background: var(--green);
+      box-shadow: 0 12px 25px rgba(15, 111, 94, 0.24);
+    }
+
+    .button.primary:hover { background: var(--green-dark); }
+
+    .button.secondary {
+      color: var(--ink);
+      background: #fffefa;
+      border: 1px solid #d2d9d6;
+    }
+
+    .button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .completion {
+      margin: auto;
+      text-align: center;
+      max-width: 720px;
+    }
+
+    .completion h2 { margin-inline: auto; }
+
+    @media (max-width: 940px) {
+      .survey-layout, .field-grid, .option-grid, .matrix-options, .matrix-options.six {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel { position: static; }
+      .progress { width: 100%; }
+      .meta-row { flex-direction: column; align-items: stretch; }
+      h2 { font-size: clamp(32px, 9vw, 58px); }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 20px, 1180px); padding-top: 16px; }
+      .topbar { flex-direction: column; align-items: stretch; }
+      .question-panel { min-height: calc(100vh - 190px); padding: 22px; }
+      .option { font-size: 17px; min-height: 66px; }
+      .footer-nav { flex-direction: column-reverse; }
+      .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">AI</div>
+        <div>
+          <h1>AI Tool Platform Perception Survey</h1>
+          <p>Tell us where AI tools feel natural, trustworthy, and worth trying.</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="survey-layout">
+      <section class="panel question-panel" id="questionCard"></section>
+      <aside class="panel side-panel">
+        <h3>Privacy commitment</h3>
+        <p>All survey information will remain confidential and all participants will be anonymized. Responses are used only for internal research on AI tool content and platform perception.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "mena-ai-platform-perception-survey-responses";
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWeZNAyXtA_oY-9MvZGnUFlAs451Rjx6svM77PXxcPaGFz7h4o5zRulOzRUNg80eU-0g/exec";
+
+    const countries = [
+      "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Cote d'Ivoire","Croatia","Cuba","Cyprus","Czechia","Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe","Other"
+    ];
+
+    const options = {
+      profiles: ["Student", "Working professional", "Creator", "Developer", "Entrepreneur", "Other"],
+      aiTime: ["Less than 1 hour", "2-4 hours", "More than 4 hours", "Other"],
+      discoverPlatforms: ["TikTok", "Instagram", "YouTube", "Snapchat", "Facebook", "X", "LinkedIn", "Word of Mouth"],
+      contentPlatforms: ["TikTok", "Instagram", "YouTube", "Snapchat", "Facebook", "X", "LinkedIn", "Other"],
+      brandPlatforms: ["TikTok", "Instagram", "YouTube", "Snapchat"],
+      brandScenarios: [
+        "Discovering a new AI tool",
+        "Trusting that the tool is useful",
+        "Watching a quick product demo",
+        "Watching a 0-1 tutorial",
+        "Seeing a premium / high-quality brand",
+        "Seeing a local creator use the tool"
+      ],
+      tiktokWords: ["Fast discovery", "Easy to understand", "Creator-driven", "Trend-driven", "Useful for new tools", "Too entertaining", "Not serious enough", "Other"],
+      instagramWords: ["Premium", "Visual", "Trustworthy", "Lifestyle", "Good for brand image", "Less useful for product explanation", "Other"],
+      youtubeWords: ["Detailed", "Trustworthy", "Educational", "Good for tutorials", "Takes more time", "Good for reviews", "Other"],
+      snapchatWords: ["Local", "Familiar", "Frequent use", "Good for creator demos", "Good for repeated exposure", "Not suitable for serious products", "Other"],
+      aiScenarioOptions: [
+        "0-1 creator tutorial on how to use an AI tool",
+        "Comparison with other AI tools",
+        "Making-money case study with an AI tool",
+        "Office productivity case study with an AI tool",
+        "Native ad showing AI use in daily life",
+        "Not suitable for showing AI tools"
+      ],
+      aiScenarioPlatforms: ["TikTok", "Instagram", "YouTube", "Snapchat"],
+      tryContent: [
+        "Summarizing dozens of PDFs",
+        "Translating Arabic / English content",
+        "Improving study efficiency",
+        "Making PPT for presentations",
+        "Researching a topic or market",
+        "Comparison with ChatGPT / Gemini",
+        "Creator sharing experience of using this AI tool to make profit",
+        "A professional 0-1 tutorial"
+      ]
+    };
+
+    const state = {
+      step: 0,
+      data: {
+        profile: {},
+        answers: {},
+        matrices: {
+          brandFit: {},
+          aiScenarioFit: {}
+        }
+      }
+    };
+
+    const questionOrder = [
+      "profile",
+      "aiTime",
+      "discoverPlatforms",
+      "contentPlatforms",
+      "brandFit",
+      "tiktokWords",
+      "instagramWords",
+      "youtubeWords",
+      "snapchatWords",
+      "aiScenarioFit",
+      "tryContent",
+      "openPlatform",
+      "complete"
+    ];
+
+    const $ = (selector) => document.querySelector(selector);
+    const esc = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+
+    function makeId() {
+      return crypto.randomUUID ? crypto.randomUUID() : `response-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function getResponses() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+      catch { return []; }
+    }
+
+    function saveResponses(responses) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+    }
+
+    async function submitToGoogleSheet(payload) {
+      if (!GOOGLE_APPS_SCRIPT_URL) return true;
+      const body = new URLSearchParams();
+      body.set("payload", JSON.stringify(payload));
+      try {
+        await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body
+        });
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function renderShell(title, hint, body, options = {}) {
+      const index = state.step;
+      const total = questionOrder.length - 2;
+      const label = index === 0 ? "Profile" : `Question ${Math.min(index, total)} / ${total}`;
+      const progress = index === 0 ? 0 : Math.min(100, Math.round((index / total) * 100));
+      const backDisabled = index === 0 ? "disabled" : "";
+      const nextText = options.submit ? "Submit" : "Next";
+      $("#questionCard").innerHTML = `
+        <div class="meta-row">
+          <span class="step-label">${esc(label)}</span>
+          <div class="progress" aria-hidden="true"><span style="width:${progress}%"></span></div>
+        </div>
+        <h2>${esc(title)}</h2>
+        <p class="hint">${esc(hint)}</p>
+        <div>${body}</div>
+        <p class="error" id="errorMessage" role="alert"></p>
+        <div class="footer-nav">
+          <button class="button secondary" id="backBtn" type="button" ${backDisabled}>Back</button>
+          <button class="button primary" id="nextBtn" type="button">${esc(nextText)}</button>
+        </div>
+      `;
+      $("#backBtn").addEventListener("click", () => {
+        if (state.step > 0) {
+          state.step -= 1;
+          renderStep();
+        }
+      });
+      $("#nextBtn").addEventListener("click", () => goNext(options.submit));
+      bindInputs();
+    }
+
+    function renderProfile() {
+      const profile = state.data.profile;
+      renderShell("AI Tool Platform Perception Survey", "Tell us a little about you.", `
+        <div class="field-grid">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" data-profile="name" required value="${esc(profile.name)}">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" data-profile="email" required value="${esc(profile.email)}">
+          </div>
+          <div class="field">
+            <label for="country">Country / Region</label>
+            <select id="country" data-profile="country" required>
+              <option value=""></option>
+              ${countries.map((country) => `<option value="${esc(country)}" ${profile.country === country ? "selected" : ""}>${esc(country)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="profileType">Your profile</label>
+            <select id="profileType" data-profile="profileType" required>
+              <option value=""></option>
+              ${options.profiles.map((item) => `<option value="${esc(item)}" ${profile.profileType === item ? "selected" : ""}>${esc(item)}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+      `);
+    }
+
+    function optionList(name, items, selected = [], type = "checkbox") {
+      return `
+        <div class="option-grid">
+          ${items.map((item) => {
+            const isSelected = type === "radio" ? selected === item : selected.includes(item);
+            return `
+              <label class="option ${isSelected ? "selected" : ""}">
+                <input type="${type}" name="${esc(name)}" value="${esc(item)}" ${isSelected ? "checked" : ""}>
+                <span>${esc(item)}</span>
+              </label>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderChoiceQuestion(key, title, hint, items, type = "checkbox", max = null) {
+      const current = state.data.answers[key] || (type === "radio" ? "" : []);
+      renderShell(title, hint, `
+        ${optionList(key, items, current, type)}
+        <div class="other-wrap ${(Array.isArray(current) ? current.includes("Other") : current === "Other") ? "visible" : ""}" id="otherWrap">
+          <label for="${esc(key)}Other">Please specify</label>
+          <input id="${esc(key)}Other" data-answer-other="${esc(key)}" value="${esc(state.data.answers[`${key}Other`])}" placeholder="Please specify">
+        </div>
+      `);
+      $("#questionCard").dataset.type = type;
+      $("#questionCard").dataset.max = max || "";
+    }
+
+    function renderMatrix(key, title, hint, rows, columns) {
+      const current = state.data.matrices[key] || {};
+      renderShell(title, hint, `
+        <div class="matrix">
+          ${rows.map((row, rowIndex) => `
+            <div class="matrix-row">
+              <h3>${esc(row)}</h3>
+              <div class="matrix-options ${columns.length > 4 ? "six" : ""}">
+                ${columns.map((column) => `
+                  <label class="matrix-choice ${current[row] === column ? "selected" : ""}">
+                    <input type="radio" name="${esc(key)}-${rowIndex}" data-matrix="${esc(key)}" data-matrix-row="${esc(row)}" value="${esc(column)}" ${current[row] === column ? "checked" : ""}>
+                    <span>${esc(column)}</span>
+                  </label>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function renderOpenQuestion() {
+      renderShell("In your opinion, which platform is best for promoting an AI tool, and why?", "Open answer.", `
+        <textarea id="openPlatform" data-answer-text="openPlatform" placeholder="Tell us what platform feels best and why.">${esc(state.data.answers.openPlatform)}</textarea>
+      `, { submit: true });
+    }
+
+    function renderComplete() {
+      $("#questionCard").innerHTML = `
+        <div class="completion">
+          <h2>Thank you.</h2>
+          <p class="hint">Your response has been submitted. We appreciate your time.</p>
+          <button class="button primary" id="anotherBtn" type="button">Submit another response</button>
+        </div>
+      `;
+      $("#anotherBtn").addEventListener("click", resetSurvey);
+    }
+
+    function bindInputs() {
+      document.querySelectorAll("[data-profile]").forEach((input) => {
+        const update = () => state.data.profile[input.dataset.profile] = input.value.trim();
+        input.addEventListener("input", update);
+        input.addEventListener("change", update);
+      });
+
+      document.querySelectorAll(".option input").forEach((input) => {
+        input.addEventListener("change", () => {
+          const key = input.name;
+          const type = $("#questionCard").dataset.type || input.type;
+          if (type === "radio") {
+            state.data.answers[key] = input.value;
+          } else {
+            state.data.answers[key] = [...document.querySelectorAll(`input[name="${key}"]:checked`)].map((node) => node.value);
+          }
+          document.querySelectorAll(".option").forEach((option) => option.classList.toggle("selected", option.querySelector("input").checked));
+          const otherWrap = $("#otherWrap");
+          if (otherWrap) {
+            const selected = state.data.answers[key];
+            const visible = Array.isArray(selected) ? selected.includes("Other") : selected === "Other";
+            otherWrap.classList.toggle("visible", visible);
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-answer-other]").forEach((input) => {
+        input.addEventListener("input", () => state.data.answers[`${input.dataset.answerOther}Other`] = input.value.trim());
+      });
+
+      document.querySelectorAll("[data-answer-text]").forEach((input) => {
+        input.addEventListener("input", () => state.data.answers[input.dataset.answerText] = input.value.trim());
+      });
+
+      document.querySelectorAll("[data-matrix]").forEach((input) => {
+        input.addEventListener("change", () => {
+          const key = input.dataset.matrix;
+          const row = input.dataset.matrixRow;
+          state.data.matrices[key][row] = input.value;
+          document.querySelectorAll(`input[data-matrix="${key}"]`).forEach((node) => {
+            node.closest(".matrix-choice").classList.toggle("selected", node.checked);
+          });
+        });
+      });
+    }
+
+    function validateCurrent() {
+      const key = questionOrder[state.step];
+      if (key === "profile") {
+        const required = ["name", "email", "country", "profileType"];
+        const missing = required.some((field) => !state.data.profile[field]);
+        const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.data.profile.email || "");
+        if (missing || !emailValid) return "Please complete the required fields before continuing.";
+      }
+      if (key === "aiTime" && !state.data.answers.aiTime) return "Please complete the required fields before continuing.";
+      if (key === "discoverPlatforms") {
+        const selected = state.data.answers.discoverPlatforms || [];
+        if (!selected.length) return "Please select at least one option.";
+        if (selected.length > 2) return "Please select no more than two options.";
+      }
+      if (key === "contentPlatforms") {
+        const selected = state.data.answers.contentPlatforms || [];
+        if (!selected.length) return "Please select at least one option.";
+        if (selected.length > 2) return "Please select no more than two options.";
+      }
+      if (["tiktokWords", "instagramWords", "youtubeWords", "snapchatWords", "tryContent"].includes(key)) {
+        const selected = state.data.answers[key] || [];
+        if (!selected.length) return "Please select at least one option.";
+        if (selected.length > 3) return "Please select no more than three options.";
+      }
+      if (key === "brandFit") {
+        const answers = state.data.matrices.brandFit || {};
+        if (options.brandScenarios.some((row) => !answers[row])) return "Please answer every row before continuing.";
+      }
+      if (key === "aiScenarioFit") {
+        const answers = state.data.matrices.aiScenarioFit || {};
+        if (options.aiScenarioPlatforms.some((row) => !answers[row])) return "Please answer every row before continuing.";
+      }
+      if (key === "openPlatform" && !state.data.answers.openPlatform) return "Please complete the required fields before submitting.";
+      return "";
+    }
+
+    async function goNext(submit = false) {
+      const error = validateCurrent();
+      const errorNode = $("#errorMessage");
+      if (error) {
+        if (errorNode) errorNode.textContent = error;
+        return;
+      }
+
+      if (submit) {
+        const responses = getResponses();
+        const response = {
+          id: makeId(),
+          createdAt: new Date().toISOString(),
+          profile: structuredClone(state.data.profile),
+          answers: structuredClone(state.data.answers),
+          matrices: structuredClone(state.data.matrices)
+        };
+        responses.push(response);
+        saveResponses(responses);
+        const synced = await submitToGoogleSheet(response);
+        if (!synced && errorNode) errorNode.textContent = "Your response was saved in this browser, but remote sync may have failed.";
+      }
+
+      state.step += 1;
+      renderStep();
+    }
+
+    function renderStep() {
+      const key = questionOrder[state.step];
+      if (key === "profile") renderProfile();
+      if (key === "aiTime") renderChoiceQuestion("aiTime", "How much time do you use AI tools every day?", "Choose the option closest to your daily usage.", options.aiTime, "radio");
+      if (key === "discoverPlatforms") renderChoiceQuestion("discoverPlatforms", "Where do you usually discover new apps or digital / AI tools?", "Multiple choice. Select up to two.", options.discoverPlatforms, "checkbox", 2);
+      if (key === "contentPlatforms") renderChoiceQuestion("contentPlatforms", "Where would you prefer to watch AI-related content?", "Multiple choice. Select up to two.", options.contentPlatforms, "checkbox", 2);
+      if (key === "brandFit") renderMatrix("brandFit", "Which platform feels most suitable for each type of brand content?", "Single choice per row.", options.brandScenarios, options.brandPlatforms);
+      if (key === "tiktokWords") renderChoiceQuestion("tiktokWords", "Which words best describe TikTok?", "Multiple choice. Select up to three.", options.tiktokWords, "checkbox", 3);
+      if (key === "instagramWords") renderChoiceQuestion("instagramWords", "Which words best describe Instagram?", "Multiple choice. Select up to three.", options.instagramWords, "checkbox", 3);
+      if (key === "youtubeWords") renderChoiceQuestion("youtubeWords", "Which words best describe YouTube?", "Multiple choice. Select up to three.", options.youtubeWords, "checkbox", 3);
+      if (key === "snapchatWords") renderChoiceQuestion("snapchatWords", "Which words best describe Snapchat?", "Multiple choice. Select up to three.", options.snapchatWords, "checkbox", 3);
+      if (key === "aiScenarioFit") renderMatrix("aiScenarioFit", "If you saw an AI tool on these platforms, what type of content would feel most natural?", "Single choice per platform.", options.aiScenarioPlatforms, options.aiScenarioOptions);
+      if (key === "tryContent") renderChoiceQuestion("tryContent", "What kind of content would make you want to try an AI tool?", "Multiple choice. Select up to three.", options.tryContent, "checkbox", 3);
+      if (key === "openPlatform") renderOpenQuestion();
+      if (key === "complete") renderComplete();
+    }
+
+    function resetSurvey() {
+      state.step = 0;
+      state.data = { profile: {}, answers: {}, matrices: { brandFit: {}, aiScenarioFit: {} } };
+      renderStep();
+    }
+
+    renderStep();
+  </script>
+</body>
+</html>
