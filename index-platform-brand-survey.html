@@ -473,10 +473,25 @@
         "Seeing a premium / high-quality brand",
         "Seeing a local creator use the tool"
       ],
-      tiktokWords: ["Fast discovery", "Easy to understand", "Creator-driven", "Trend-driven", "Useful for new tools", "Too entertaining", "Not serious enough", "Other"],
-      instagramWords: ["Premium", "Visual", "Trustworthy", "Lifestyle", "Good for brand image", "Less useful for product explanation", "Other"],
-      youtubeWords: ["Detailed", "Trustworthy", "Educational", "Good for tutorials", "Takes more time", "Good for reviews", "Other"],
-      snapchatWords: ["Local", "Familiar", "Frequent use", "Good for creator demos", "Good for repeated exposure", "Not suitable for serious products", "Other"],
+      platformWords: [
+        "Feels premium",
+        "Trustworthy",
+        "Easy to understand",
+        "Fast discovery",
+        "Good for product demos",
+        "Good for tutorials",
+        "Creator-driven",
+        "Localized and familiar",
+        "Good for brand image",
+        "Good for repeated exposure",
+        "Too entertaining",
+        "Not serious enough",
+        "Not suitable for AI tools",
+        "Feels mass-market",
+        "Used by high-income users",
+        "Popular among professionals",
+        "Other"
+      ],
       aiScenarioOptions: [
         "0-1 creator tutorial on how to use an AI tool",
         "Comparison with other AI tools",
@@ -803,10 +818,10 @@
       if (key === "discoverPlatforms") renderChoiceQuestion("discoverPlatforms", "Where do you usually discover new apps or digital / AI tools?", "Multiple choice. Select up to two.", options.discoverPlatforms, "checkbox", 2);
       if (key === "contentPlatforms") renderChoiceQuestion("contentPlatforms", "Where would you prefer to watch AI-related content?", "Multiple choice. Select up to two.", options.contentPlatforms, "checkbox", 2);
       if (key === "brandFit") renderMatrix("brandFit", "Which platform feels most suitable for each type of brand content?", "Single choice per row.", options.brandScenarios, options.brandPlatforms);
-      if (key === "tiktokWords") renderChoiceQuestion("tiktokWords", "Which words best describe TikTok?", "Multiple choice. Select up to three.", options.tiktokWords, "checkbox", 3);
-      if (key === "instagramWords") renderChoiceQuestion("instagramWords", "Which words best describe Instagram?", "Multiple choice. Select up to three.", options.instagramWords, "checkbox", 3);
-      if (key === "youtubeWords") renderChoiceQuestion("youtubeWords", "Which words best describe YouTube?", "Multiple choice. Select up to three.", options.youtubeWords, "checkbox", 3);
-      if (key === "snapchatWords") renderChoiceQuestion("snapchatWords", "Which words best describe Snapchat?", "Multiple choice. Select up to three.", options.snapchatWords, "checkbox", 3);
+      if (key === "tiktokWords") renderChoiceQuestion("tiktokWords", "Which words best describe TikTok?", "Multiple choice. Select up to three.", options.platformWords, "checkbox", 3);
+      if (key === "instagramWords") renderChoiceQuestion("instagramWords", "Which words best describe Instagram?", "Multiple choice. Select up to three.", options.platformWords, "checkbox", 3);
+      if (key === "youtubeWords") renderChoiceQuestion("youtubeWords", "Which words best describe YouTube?", "Multiple choice. Select up to three.", options.platformWords, "checkbox", 3);
+      if (key === "snapchatWords") renderChoiceQuestion("snapchatWords", "Which words best describe Snapchat?", "Multiple choice. Select up to three.", options.platformWords, "checkbox", 3);
       if (key === "aiScenarioFit") renderMatrix("aiScenarioFit", "If you saw an AI tool on these platforms, what type of content would feel most natural?", "Single choice per platform.", options.aiScenarioPlatforms, options.aiScenarioOptions);
       if (key === "tryContent") renderChoiceQuestion("tryContent", "What kind of content would make you want to try an AI tool?", "Multiple choice. Select up to three.", options.tryContent, "checkbox", 3);
       if (key === "openPlatform") renderOpenQuestion();
